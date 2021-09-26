@@ -1,0 +1,66 @@
+<div class="container-fluid noscroll">
+  <div class="listing-view">
+    <div class="d-flex justify-content-end mb-3">
+      <action-btn
+        [id]="'create-query'"
+        (click)="navigateToCreateQuery()"
+        [buttonText]="'CREATE QUERY'"
+      ></action-btn>
+    </div>
+
+    <div class="listing-view-body">
+      <div class="search-header">
+        <div
+          class="selected-text"
+          id="delete-selected"
+          (click)="deleteQueries?.length ? confirmDialog() : false"
+          [ngStyle]="{ color: deleteQueries?.length ? '#0098f3' : '#d5d7db' }"
+        >
+          DELETE SELECTED
+        </div>
+        <div class="search-input-holder">
+          <input
+            type="text"
+            class="form-control"
+            id="search-name-input"
+            placeholder="Search by Name"
+            (keyup)="quickSearch()"
+            [(ngModel)]="searchValue"
+          />
+          <button type="button" id="search-name-btn" class="search-icon">
+             <img src="assets/svgs/search-inactive.svg" alt="">
+          </button>
+          <button *ngIf="searchValue" (click)="searchValue= '';quickSearch();" type="button" class="cross-icon">
+            <svg width="22" height="22" viewBox="0 0 16 16" class="bi bi-x" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+              <path fill-rule="evenodd" d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708z"/>
+            </svg>
+         </button>
+
+        </div>
+      </div>
+
+      <ag-grid-angular
+        [gridOptions]="gridOptions"
+        id="query-grid"
+        class="ag-theme-alpine ag-grid-height-width"
+        [columnDefs]="columnDefs"
+        (gridReady)="onGridReady($event)"
+        [animateRows]="true"
+        [rowData]="rowData"
+        [suppressMenuHide]="true"
+        [suppressContextMenu]="true"
+        rowSelection="multiple"
+        [getContextMenuItems]="getContextMenuItems"
+        (selectionChanged)="onSelectionChanged($event)"
+        (filterChanged)="onFilterChanged($event)"
+        [loadingOverlayComponent]="loadingOverlayComponent"
+        [frameworkComponents]="frameworkComponents"
+        [tooltipShowDelay]="tooltipShowDelay"
+        [suppressRowClickSelection]="true"
+        [rowHeight]="28"
+        [isRowSelectable]="isRowSelectable"
+      >
+      </ag-grid-angular>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,76 @@
+<p-multiSelect
+  #tSelect
+  [styleClass]="'tree-select'"
+  [disabled]="disabled"
+  appendTo="body"
+  [filter]="false"
+  [showToggleAll]="false"
+  filterPlaceHolder="Search"
+  [autofocusFilter]="false"
+  [options]="treeOptions"
+  [(ngModel)]="selectedOptions"
+  (onChange)="onChangeMultiSelect($event)"
+  (onPanelShow)="onShowHidePanel(true)"
+  (onPanelHide)="onShowHidePanel(false)"
+>
+  <ng-template let-values pTemplate="selectedItems">
+    <span
+      class="ui-multiselected-empty-token ui-corner-all control-label"
+      [ngClass]="{ 'list-label-lg': dropdownlistShowed }"
+      >{{ caption }}</span
+    >
+      <span [hidden]="!(getSelectedItemsCount() == 0)" class="ui-multiselected-item-token">0 {{pluralCaption}}</span>
+      <span [hidden]="!(getSelectedItemsCount() === 1)" class="ui-multiselected-item-token">{{ getSelectedItemsCount() }} {{singularCaption}}</span>
+      <span [hidden]="!(getSelectedItemsCount() > 1)" class="ui-multiselected-item-token">{{ getSelectedItemsCount() }} {{pluralCaption}}</span>
+
+  </ng-template>
+  <ng-template let-option let-i="index" pTemplate="item">
+    <a
+      class="dropdown-expand-control pi expand-icon font-weigh-600"
+      [ngClass]="{ expand: option.expand }"
+      (click)="
+        option.expand = !option.expand; onClickChildOptionContainer($event)
+      "
+    >
+      <label>{{ option.label }}</label></a
+    >
+    <div class="dropdown-expand-panel" *ngIf="option.expand">
+      <div
+        (click)="onClickChildOptionContainer($event)"
+        class="child-option-checkbox"
+        *ngFor="let childOption of option.childOptions"
+      >
+        <p-checkbox
+          name="{{ option.label }}"
+          [value]="childOption.value"
+          label="{{ childOption.label }}"
+          [(ngModel)]="option.selectedChildOptions"
+          (click)="onClickChildOptionChecbox($event)"
+          (onChange)="onChangeChildOptionCheckbox(option)"
+        >
+        </p-checkbox>
+      </div>
+    </div>
+  </ng-template>
+
+  <p-header>
+    <div class="top-actions">
+      <span class="selected-value" *ngIf="getSelectedItemsCount() <= 1">{{ getSelectedItemsCount() }} {{singularCaption}}</span>
+      <span class="selected-value" *ngIf="getSelectedItemsCount() > 1">{{ getSelectedItemsCount() }} {{pluralCaption}}</span>
+      <a
+        class="link"
+        [ngStyle]="{ color: selectedOptions?.length ? '#0098f3' : '#d5d7db' }"
+        (click)="selectedOptions?.length ? clearAll() : false"
+        >CLEAR ALL</a
+      >
+    </div>
+  </p-header>
+  <p-footer>
+    <action-btn
+      [ngClass]="'btn-sm'"
+      [disabled]="apply"
+      (click)="onApplyChanges($event)"
+      [buttonText]="'Apply'"
+    ></action-btn>
+  </p-footer>
+</p-multiSelect>

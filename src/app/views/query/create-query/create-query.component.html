@@ -1,0 +1,84 @@
+<!-- main -->
+<main class="main-wrap">
+  <div id="query-header" class="top-head-wrap">
+    <div
+      id="query-sidenav-header"
+      (click)="
+        configFormValid ? drawer.toggle() : false;
+        configFormValid ? (collapse = !collapse) : false
+      "
+      class="collapse-icon-wrap"
+    >
+      <h2>Query Configuration</h2>
+      <i data-toggle="sidebar-colapse" class="collapse-icon">
+        <div
+          [ngStyle]="{ opacity: configFormValid ? '1' : '0.5' }"
+          class="d-flex align-items-center"
+        >
+          <span *ngIf="collapse" class="fa fa-lg fa-angle-double-right"></span>
+          <span *ngIf="!collapse" class="fa fa-lg fa-angle-double-left"></span>
+        </div>
+      </i>
+    </div>
+    <div id="query-main-hearder" class="title-head">
+      <h1>Query Filters and Options</h1>
+      <span>
+        Data available up to {{ maxDate | momentFormat: "MMMM DD, YYYY" }}
+      </span>
+    </div>
+  </div>
+  <form [formGroup]="createQueryForm">
+    <!-- Bootstrap row -->
+    <mat-drawer-container>
+      <!-- Sidebar -->
+      <mat-drawer [opened]="true" #drawer class="query-sidenav" mode="side">
+        <query-config
+          *ngIf="isReady"
+          [clientId]="clientId"
+          [queryId]="queryId"
+          [duplicate]="duplicate"
+          [configFormValues]="configFormValues"
+          (isValid)="configFormState($event)"
+          (getMaxDate)="getMaxDate($event)"
+          formControlName="queryConfigForm"
+        ></query-config>
+      </mat-drawer>
+      <!-- MAIN -->
+      <mat-drawer-content>
+        <div class="col">
+          <div class="body-content">
+            <div class="form-wrap">
+              <query-filter-option
+                *ngIf="isReady"
+                [clientId]="clientId"
+                [queryId]="queryId"
+                [duplicate]="duplicate"
+                [filterOptionValues]="filterOptionValues"
+                formControlName="queryFOForm"
+                (isValid)="filterOptionFormState($event)"
+                (getSelectedGroup)="getSelectedGroup($event)"
+              ></query-filter-option>
+              <div class="row">
+                <div
+                  class="col-lg-4 offset-lg-8 d-flex justify-content-end align-items-center"
+                >
+                  <app-cancel-btn
+                    (click)="navigateToQueryListing()"
+                  ></app-cancel-btn>
+                  <app-primary-btn
+                    [id]="'btn-save'"
+                    [disabled]="!filterOptionValid || !configFormValid"
+                    (click)="saveQuery()"
+                    [buttonText]="btnSave"
+                  ></app-primary-btn>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </mat-drawer-content>
+      <!-- Main Col END -->
+    </mat-drawer-container>
+  </form>
+  <!-- body-row END -->
+</main>

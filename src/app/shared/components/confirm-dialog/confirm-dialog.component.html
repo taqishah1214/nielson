@@ -1,0 +1,23 @@
+<div class="dialog-header">
+  <h1 mat-dialog-title class="mat-dialog-title">
+    {{ title }}
+  </h1>
+</div>
+<div mat-dialog-content class="mat-dialog-content">
+  <p class="confirm-paragraph-style">{{ message }}</p>
+</div>
+<div class="d-flex justify-content-end">
+  <div mat-dialog-actions class="mat-dialog-actions">
+    <button id="cancel" mat-button (click)="onDismiss()" class="cancel-link">
+      CANCEL
+    </button>
+    <button
+      id="confirm"
+      mat-raised-button
+      (click)="onConfirm()"
+      class="btn btn-primary"
+    >
+      {{ buttonTitle }}
+    </button>
+  </div>
+</div>

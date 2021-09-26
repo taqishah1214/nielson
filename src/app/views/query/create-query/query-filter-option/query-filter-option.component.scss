@@ -1,0 +1,40 @@
+.create-query-form {
+  min-width: 150px;
+  max-width: 500px;
+  width: 100%;
+}
+
+.create-query-full-width {
+  width: 100%;
+}
+
+.add-button {
+  width: 50px;
+  height: 28px;
+  border-radius: 4px;
+  background-color: #0098f3;
+  font-family: "Open Sans", sans-serif;
+  text-align: center;
+  color: #ffffff;
+}
+
+.value-rectangle-filter {
+  background-color: #ffffff;
+  width: 100%;
+  padding: 10px 15px;
+  bottom: 0;
+  position: fixed;
+
+  /* box-shadow: 0px 5px 5px 0px rgba(0,0,0,0.15); */
+  min-width: calc(100% + 48px);
+  border-top: solid 1px #bbccdd;
+}
+
+.value-rectangle {
+  background-color: #ffffff;
+  width: 100%;
+  padding: 10px 15px;
+  bottom: 0;
+  position: sticky;
+  border-top: solid 1px #bbccdd;
+}

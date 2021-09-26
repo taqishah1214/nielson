@@ -1,0 +1,11 @@
+ <div class="dropdown query-action-menu" [ngClass]="{'non-owner-action-menu ': !isEditable}">
+  <button class="dropdown-toggle" type="button"  data-toggle="dropdown" >
+    <img src="assets/svgs/menu.svg">
+  </button>
+
+  <div class="dropdown-menu" >
+    <a class="dropdown-item" (click)="runQuery()">Run Query</a>
+    <a class="dropdown-item" (click)="duplicateDialog()">Duplicate</a>
+    <a class="dropdown-item" (click)="isEditable ? redirectToEdit() : false" [ngClass]="{'disable-menu-option': !isEditable}">Edit</a>
+  </div>
+</div>

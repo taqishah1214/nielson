@@ -1,0 +1,119 @@
+<div class="row">
+  <div class="sidebar-outer-wrap">
+    <div class="sidebar-expanded d-none d-md-block">
+      <div class="sidebar-inner">
+        <form [formGroup]="configForm" autocomplete="off" class="create-query-form padding-10">
+          <div class="row">
+            <div class="col-md-12">
+              <div class="input-wrapper">
+                <label>Name
+                  <span class="starick-color"> *</span>
+                </label>
+
+                <mat-form-field [ngClass]="{
+                    'mat-form-field-invalid':
+                      configForm.controls.queryName?.errors?.invalid
+                  }" class="create-query-full-width" appearance="outline">
+                  <input maxlength="100" name="name" matInput placeholder="Max 100 characters"
+                    formControlName="queryName" id="name" (ngModelChange)="validateName = true; emitFormStatus()" />
+                </mat-form-field>
+                <div *ngIf="active">
+                  <mat-error>Enter a unique name for this query.</mat-error>
+                </div>
+              </div>
+            </div>
+
+            <div class="col-md-12">
+              <div class="input-wrapper">
+                <label>Description (optional)</label>
+                <mat-form-field class="create-query-full-width" appearance="outline">
+                  <textarea maxlength="200" formControlName="description" matInput placeholder="Max 200 characters"
+                    id="description"></textarea>
+                </mat-form-field>
+              </div>
+            </div>
+
+            <div class="col-md-12">
+              <div class="divider-horizontal"></div>
+            </div>
+            <div class="col-md-12">
+              <single-select caption="Configuration Set" id="configuration-set-dropdown"
+                [selected]="configForm.value.configurationSet" [items]="configurationSets" [required]="true"
+                (valueChange)="getConfigurationSetValue($event)"></single-select>
+            </div>
+            <div class="col-md-12">
+              <single-select caption="Conversion Type" id="conversion-type-dropdown"
+                [selected]="configForm.value.conversionType" [items]="conversionTypes" [required]="true"
+                (valueChange)="getConversionTypesValue($event)"></single-select>
+            </div>
+            <div class="col-md-12">
+              <single-select caption="Breakdown" id="breakdown-dropdown" [selected]="configForm.value.breakdown"
+                [items]="breakdown" [required]="true" (valueChange)="getBreakdownValue($event)"></single-select>
+            </div>
+            <div class="col-md-12">
+              <single-select caption="Time Period" id="timeperiod-dropdown" [selected]="configForm.value.timePeriod"
+                [items]="timePeriod" [required]="true" (valueChange)="getTimePeriodValue($event)"></single-select>
+            </div>
+
+            <div class="time-period-row d-flex no-gutters">
+              <div *ngIf="configForm.value.timePeriod == 'custom'" class="col-lg-5 col-md-5">
+                <mat-form-field (click)="startPicker.open()" class="create-query-full-width" [ngClass]="{
+                    'mat-form-field-invalid':
+                      configForm.controls.timeperiodStart?.errors?.invalidDates || configForm.controls.timeperiodStart?.errors?.limitExceed
+                  }" appearance="outline">
+                  <input class="date-picker-color" readonly matInput [min]="validateDate ? startDate : null"
+                    [max]="validateDate ? maxDate : null" [matDatepicker]="startPicker"
+                    formControlName="timeperiodStart" id="tp-start-date" />
+                  <mat-datepicker-toggle matSuffix [for]="startPicker"></mat-datepicker-toggle>
+                  <mat-datepicker (opened)="onOpenTimePeriodDates()" (closed)="validateDates()" disabled="false"
+                    #startPicker></mat-datepicker>
+                </mat-form-field>
+              </div>
+              <div class="col-lg-2 col-md-1">
+                <span *ngIf="configForm.value.timePeriod == 'custom'" class="to-text">TO</span>
+              </div>
+              <div *ngIf="configForm.value.timePeriod == 'custom'" class="col-lg-5 col-md-5">
+                <mat-form-field (click)="endPicker.open()" class="create-query-full-width" [ngClass]="{
+                    'mat-form-field-invalid':
+                    configForm.controls.timeperiodStart?.errors?.invalidDates || configForm.controls.timeperiodStart?.errors?.limitExceed
+                  }" appearance="outline">
+                  <input class="date-picker-color" readonly matInput [matDatepicker]="endPicker"
+                    [max]="validateDate ? maxDate : null" [min]="validateDates ? startDate : null"
+                    formControlName="timeperiodEnd" id="tp-end-date" (dateChange)="updateMinDate($event)" />
+                  <mat-datepicker-toggle matSuffix [for]="endPicker"></mat-datepicker-toggle>
+                  <mat-datepicker (opened)="onOpenTimePeriodDates()" (closed)="validateDates()" disabled="false"
+                    #endPicker></mat-datepicker>
+                </mat-form-field>
+              </div>
+              <mat-error *ngIf="configForm.controls.timeperiodStart?.errors?.invalidDates">Start Date is greater than
+                End Date</mat-error>
+              <mat-error *ngIf="configForm.controls.timeperiodStart?.errors?.limitExceed">Max limit exceeded</mat-error>
+            </div>
+            <div class="last-numbers-row d-flex">
+              <span *ngIf="configForm.value.timePeriod == 'lastndays'">LAST</span>
+              <div *ngIf="configForm.value.timePeriod == 'lastndays'" class="col-lg-4">
+                <mat-form-field class="create-query-full-width" appearance="outline">
+                  <input min="1" max="{{timePeriodMaxValue}}" (focusout)="checkNumber()" (keypress)="numberOnly($event)"
+                    formControlName="days" matInput type="number" id="tp-days" />
+                </mat-form-field>
+              </div>
+              <span
+                *ngIf="configForm.value.timePeriod === 'lastndays' && configForm.value.breakdown === 'Daily' ">DAYS</span>
+              <span
+                *ngIf="configForm.value.timePeriod === 'lastndays' && configForm.value.breakdown === 'Monthly' ">MONTHS</span>
+              <span
+                *ngIf="configForm.value.timePeriod === 'lastndays' && configForm.value.breakdown === 'Weekly' ">WEEKS</span>
+            </div>
+            <div *ngIf="configForm.value.timePeriod == 'lastndays' || configForm.value.timePeriod == 'custom'" class="col-md-12 max-limit-message">
+              <span *ngIf="configForm.value.breakdown === 'Weekly'">The maximum time period is 52 weeks </span>
+              <span *ngIf="configForm.value.breakdown === 'Monthly'">The maximum time period is 12 months </span>
+              <span *ngIf="configForm.value.breakdown === 'Daily'">The maximum time period is 90 days </span>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- sidebar-container END -->
+  </div>
+</div>

@@ -1,0 +1,88 @@
+<p-multiSelect
+  #mSelect
+  [disabled]="disabled"
+  [styleClass]="'multi-select'"
+  [options]="items"
+  [ngModel]="selected"
+  (ngModelChange)="onModelChange($event)"
+  filterPlaceHolder="Search"
+  [showToggleAll]="showToggleAll"
+  [autofocusFilter]="false"
+  [virtualScroll]="true"
+  [filter]="true"
+  resetFilterOnHide="true"
+  (onPanelShow)="onShowHidePanel(true)"
+  (onPanelHide)="onShowHidePanel(false)"
+  [itemSize]="30"
+  (onChange)="updatevalue($event)"
+  appendTo="body"
+>
+  <ng-template let-values pTemplate="selectedItems">
+    <span
+      class="ui-multiselected-empty-token ui-corner-all control-label"
+      [ngClass]="{ 'list-label-lg': dropdownlistShowed }"
+      >{{ caption }}</span>
+    <span class="ui-multiselected-item-token ui-corner-all"
+      [hidden]="!(singularCaption && pluralCaption && !dropdownlistShowed && values && values?.length == 1)">
+      1 {{ singularCaption }}</span>
+    <span class="ui-multiselected-item-token"
+    [hidden]="!(singularCaption && pluralCaption && !dropdownlistShowed && values && values?.length > 1)"
+      >{{ values?.length }} {{ pluralCaption }}</span>   
+  </ng-template>
+
+  <ng-template let-item pTemplate="item">
+    <div>{{ item.label }}</div>
+  </ng-template>
+  <p-header>
+    <div class="top-actions">
+      <span class="selected-value">{{ selected?.length || 0 }} of {{ items?.length }} Selected</span>
+      <a
+        class="link"
+        [ngStyle]="{ color: selected?.length ? '#0098f3' : '#d5d7db' }"
+        (click)="selected?.length ? clearAll() : false"
+        >CLEAR ALL</a
+      >
+      <a
+        class="link"
+        [ngStyle]="{ color: selected?.length ? '#0098f3' : '#d5d7db' }"
+        *ngIf="!isViewSelected"
+        (click)="
+          selected?.length ? (isViewSelected = true) : false;
+          selected?.length ? viewSelected(true, $event) : false
+        "
+        >VIEW SELECTED</a
+      >
+      <a
+        class="link"
+        [ngStyle]="{ color: '#0098f3' }"
+        *ngIf="isViewSelected"
+        (click)="isViewSelected = false; viewSelected(false, $event)"
+        >VIEW ALL</a
+      >
+    </div>
+    <div class="ui-multiselect-item ui-corner-all" tabindex="0">
+      <div class="ui-chkbox d-none">
+        <div class="ui-chkbox-box ui-corner-all ui-state-default">
+          <span class="ui-chkbox-icon ui-clickable"></span>
+        </div>
+      </div>
+      <div *ngIf="showToggleAll" class="ng-star-inserted">Select All</div>
+    </div>
+  </p-header>
+  <p-footer *ngIf="addBtn || closeBtn">
+    <action-btn
+      *ngIf="addBtn"
+      (click)="onAdd($event)"
+      [disabled]="!selected?.length"
+      [ngClass]="'btn-sm'"
+      [buttonText]="'ADD'"
+    ></action-btn>
+    <action-btn
+      *ngIf="closeBtn"
+      (click)="onClose($event)"
+      [disabled]="!selected?.length"
+      [ngClass]="'btn-sm'"
+      [buttonText]="'Close'"
+    ></action-btn>
+  </p-footer>
+</p-multiSelect>

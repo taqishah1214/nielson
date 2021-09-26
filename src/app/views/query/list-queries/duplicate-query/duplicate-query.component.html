@@ -1,0 +1,60 @@
+<div class="dialog-header dialog-header-black">
+  <h1 mat-dialog-title>
+    {{ title }}
+  </h1>
+</div>
+<form [formGroup]="duplicateQuery" autocomplete="off">
+  <div class="mat-dialog-content">
+    <div class="row">
+      <div class="col-lg-9">
+        <div class="input-wrapper">
+          <label>Query Name</label>
+          <mat-form-field
+            [ngClass]="{
+              'mat-form-field-invalid':
+                duplicateQuery.controls.name?.errors?.invalid
+            }"
+            class="create-query-full-width"
+            [class.validate-name]="validateName === false"
+            appearance="outline"
+          >
+            <input
+              maxlength="100"
+              name="name"
+              formControlName="name"
+              matInput
+              placeholder="Max 100 characters"
+              id="name"
+              (ngModelChange)="validateName = true"
+            />
+          </mat-form-field>
+          <div *ngIf="active">
+            <mat-error>Enter a unique name for this query.</mat-error>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="d-flex justify-content-end">
+    <div mat-dialog-actions>
+      <app-cancel-btn
+        (click)="onDismiss()"
+        [id]="'cancel-duplicate'"
+      ></app-cancel-btn>
+      <button
+        id="edit-duplicate"
+        mat-button
+        (click)="redirectToCreate()"
+        class="edit-link"
+      >
+        EDIT QUERY
+      </button>
+      <app-primary-btn
+        [id]="'btn-save-duplicate'"
+        [disabled]="validateName || !duplicateQuery.valid"
+        (click)="save()"
+        [buttonText]="buttonTitle"
+      ></app-primary-btn>
+    </div>
+  </div>
+</form>

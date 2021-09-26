@@ -1,0 +1,33 @@
+<p-dropdown
+  #sSelect
+  [disabled]="disabled"
+  [styleClass]="'single-select'"
+  [autoDisplayFirst]="false"
+  [options]="items"
+  [(ngModel)]="selected"
+  resetFilterOnHide="true"
+  [filter]="filter"
+  filterPlaceholder="Search"
+  appendTo="body"
+  (onShow)="onShowHidePanel(true)"
+  (onHide)="onShowHidePanel(false)"
+  (onChange)="updatevalue($event)"
+>
+  <ng-template let-item pTemplate="selectedItem">
+    <label
+      class="control-label"
+      [ngClass]="{ 'list-label-lg': dropdownlistShowed }"
+    >
+      {{ caption }}
+    <span [hidden]="!required" class="starick-color">*</span>
+    </label>
+    <span [hidden]="!(!dropdownlistShowed && selected)" class="selected-value">
+      {{ item.label }}
+    </span>
+  </ng-template>
+  <ng-template let-data pTemplate="item">
+    <div class="ui-helper-clearfix">
+      <div class="item-label">{{ data.label }}</div>
+    </div>
+  </ng-template>
+</p-dropdown>

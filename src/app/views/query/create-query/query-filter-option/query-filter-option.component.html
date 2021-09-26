@@ -1,0 +1,167 @@
+<div [formGroup]="filterOptionForm">
+  <h2>
+    Filter Dimensions and Criteria
+    <span> (Optional) </span>
+  </h2>
+  <p>
+    <img src="assets/svgs/info-fill.svg" alt="" />
+    If none are selected, all dimensions and associated criteria filters will be
+    applied to the query.
+  </p>
+  <div class="row">
+    <div class="col-lg-4 col-md-6">
+      <single-select [disabled]="isDimensionDisable" caption="Dimension" id="dimension-dropdown"
+        [selected]="filterOptionForm.value.dimension" [filter]="true" [items]="dimensionSet"
+        (valueChange)="getSelectedDimensionValue($event)"></single-select>
+    </div>
+    <!-- .col-lg-4 -->
+
+    <div class="col-lg-4 col-md-6">
+      <multi-select #criteria [disabled]="!dimensionValues?.length || isDimensionDisable" id="value-dropdown"
+        [addBtn]="true" [caption]="'Filter Criteria'" [items]="dimensionValues" [virtualScroll]="true"
+        (valueChange)="filterCriteriaUpdate($event)" (addClicked)="addSelections()"></multi-select>
+    </div>
+
+    <div class="col-lg-4 col-md-6">
+      <tree-select [disabled]="!selections?.length" [options]="selections" [selected]="selectedValues"
+        caption="Selection" [singularCaption]="'Selection'" [pluralCaption]="'Selections'"
+        (valueChanged)="selectionUpdate($event)" (applyChange)="applyChanges()" id="selections-dropdown"></tree-select>
+    </div>
+    <!-- .col-lg-4 -->
+  </div>
+  <!-- .row -->
+
+  <div class="divider-horizontal"></div>
+  <h3>Attributes and Metrics
+    <span class="starick-color"> *</span>
+  </h3>
+  <div class="row">
+    <div class="col-lg-4 col-md-6">
+      <multi-select id="attribute-dropdown" [closeBtn]="true" [caption]="'Attribute'" [singularCaption]="'Attribute'"
+        [pluralCaption]="'Attributes'" [items]="attributesForDropdown" [showToggleAll]="true"
+        [defaultValue]="selectedAttributes" (valueChange)="filterAttributeUpdate($event)"></multi-select>
+    </div>
+    <!-- .col-lg-4 -->
+  </div>
+  <!-- .row -->
+
+  <div class="divider-horizontal"></div>
+
+  <div class="row">
+    <div class="col-lg-4 col-md-6">
+      <multi-select id="metric-dropdown" [closeBtn]="true" [caption]="'Metric'" [singularCaption]="'Metric'"
+        [pluralCaption]="'Metrics'" [items]="metricsForDropdown" [showToggleAll]="true" [defaultValue]="selectedMetrics"
+        (valueChange)="filterMetricUpdate($event)"></multi-select>
+    </div>
+    <!-- .col-lg-4 -->
+  </div>
+  <!-- .row -->
+
+  <div class="divider-horizontal"></div>
+  <h3>Query Run Options
+    <span class="starick-color"> *</span>
+  </h3>
+  <div class="row">
+
+    <div class="col-lg-4 col-md-6">
+      <single-select caption="Frequency" id="queryrun-dropdown" [selected]="filterOptionForm.value.frequency"
+        [items]="queryRunOptions" (valueChange)="getQueryRunOption($event)"></single-select>
+    </div>
+    <!-- .col-lg-4 -->
+
+    <div class="col-lg-8">
+      <div class="row">
+
+        <div *ngIf="filterOptionForm.value.frequency == 'Runonce'" class="col-lg-3 col-md-6">
+          <div class="input-wrapper run-date-wrapper">
+            <mat-form-field (click)="runOnce.open()" class="create-query-full-width" appearance="outline">
+              <input class="date-picker-color" readonly placeholder="Run Date" [min]="validateDate ? todayDate : null"
+                formControlName="runOnceDate" matInput [matDatepicker]="runOnce" id="runonce-date" />
+              <mat-datepicker-toggle matSuffix [for]="runOnce"></mat-datepicker-toggle>
+              <mat-datepicker (opened)="onOpenRunQueryDate()" (closed)="validateRunOnceDate()" disabled="false"
+                #runOnce>
+              </mat-datepicker>
+            </mat-form-field>
+          </div>
+        </div>
+
+        <div *ngIf="
+        filterOptionForm.value.frequency == 'Monthly' ||
+        filterOptionForm.value.frequency == 'Weekly'
+      ">
+          <span class="sm-text">ON</span>
+        </div>
+
+
+
+        <div *ngIf="filterOptionForm.value.frequency == 'Monthly'" class="col-lg-4 col-md-6">
+          <single-select caption="Day of the Month" id="days-dropdown" [selected]="filterOptionForm.value.monthSelector"
+            [items]="monthDays" (valueChange)="getSelectedMonthDay($event)"></single-select>
+        </div>
+        <div *ngIf="filterOptionForm.value.frequency == 'Weekly'" class="col-lg-4 col-md-6">
+          <single-select caption="Day of the Week" id="week-dropdown" [selected]="filterOptionForm.value.weekSelector"
+            [items]="weekDays" (valueChange)="getSelectedWeekDay($event)"></single-select>
+        </div>
+
+
+
+        <div class="select-date-row">
+          <div *ngIf="
+    filterOptionForm.value.frequency == 'Daily' ||
+    filterOptionForm.value.frequency == 'Weekly' ||
+    filterOptionForm.value.frequency == 'Monthly'
+  " class="width">
+            <mat-form-field (click)="frequencyStart.open()" class="create-query-full-width" [ngClass]="{
+      'mat-form-field-invalid':
+        filterOptionForm.controls.scheduleStartDate?.errors?.invalidDates || filterOptionForm.controls.scheduleStartDate?.errors?.equalDates
+        || filterOptionForm.controls.scheduleStartDate?.errors?.smallerDate
+    }" appearance="outline">
+              <input class="date-picker-color" readonly matInput placeholder="Start date"
+                [min]="validateDate ? todayDate : null" [matDatepicker]="frequencyStart"
+                formControlName="scheduleStartDate" id="start-date" />
+              <mat-datepicker-toggle matSuffix [for]="frequencyStart"></mat-datepicker-toggle>
+              <mat-datepicker (opened)="onOpenRunQueryDate()" (closed)="validateDates();getSelectedWeekDay();" disabled="false"
+                #frequencyStart>
+              </mat-datepicker>
+            </mat-form-field>
+          </div>
+
+          <div *ngIf="
+    filterOptionForm.value.frequency == 'Daily' ||
+    filterOptionForm.value.frequency == 'Weekly' ||
+    filterOptionForm.value.frequency == 'Monthly'
+  ">
+            <span class="sm-text">TO</span>
+          </div>
+          <div *ngIf="
+    filterOptionForm.value.frequency == 'Daily' ||
+    filterOptionForm.value.frequency == 'Weekly' ||
+    filterOptionForm.value.frequency == 'Monthly'
+  " class="width">
+            <mat-form-field (click)="frequencyEnd.open()" class="create-query-full-width" [ngClass]="{
+      'mat-form-field-invalid':
+        filterOptionForm.controls.scheduleEndDate?.errors?.invalidDates || filterOptionForm.controls.scheduleStartDate?.errors?.equalDates
+        || filterOptionForm.controls.scheduleStartDate?.errors?.smallerDate
+    }" appearance="outline">
+              <input class="date-picker-color" readonly matInput placeholder="End date"
+                [min]="validateDate ? todayDate : null" [matDatepicker]="frequencyEnd" formControlName="scheduleEndDate"
+                id="end-date" />
+              <mat-datepicker-toggle matSuffix [for]="frequencyEnd"></mat-datepicker-toggle>
+              <mat-datepicker (opened)="onOpenRunQueryDate()" (closed)="validateDates();getSelectedWeekDay();" disabled="false" #frequencyEnd>
+              </mat-datepicker>
+            </mat-form-field>
+          </div>
+          <mat-error *ngIf="filterOptionForm.controls.scheduleStartDate?.errors?.invalidDates">From Date is greater
+            than To Date</mat-error>
+            <mat-error *ngIf="filterOptionForm.controls.scheduleEndDate?.errors?.datesFrequency">Date range must match the frequency
+            </mat-error>  
+          <mat-error *ngIf="filterOptionForm.controls.scheduleStartDate?.errors?.equalDates">From and To Dates cannot be
+            same</mat-error>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- .row -->
+</div>
